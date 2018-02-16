@@ -1,5 +1,8 @@
 [
         { "apt": { "name": "git" } },
         { "apt": { "name": "vim" } },
-        { "apt": { "name": "vim2" } }
+        { "apt": { "name": "chromium-browser" } },
+        { "apt": { "name": "build-essential" } },
+        { "apt": { "name": "openjdk-9-jdk" } },
+        { "apt": { "name": "openvpn" } }
 ]
