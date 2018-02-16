@@ -1,0 +1,5 @@
+[
+        { "apt": { "name": "git" } },
+        { "apt": { "name": "vim" } },
+        { "apt": { "name": "vim2" } }
+]
