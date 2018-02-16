@@ -74,16 +74,22 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger("main")
 
+    # error if wrong arguments are provided
+    if not len(sys.argv) != 1:
+        print("usage: ansimple.py ./playbook.yml")
+        sys.exit(1)
     playbook_path = sys.argv[1]
     if not os.path.exists(playbook_path):
         print("playbook '{0}' not found.".format(playbook_path))
         sys.exit(1)
 
+    # parse playbook file
     playbook = []
     with open("playbook.yml", "r") as f:
         playbook = json.load(f)
     logger.debug("parsed playbook:" + str(playbook))
 
+    # process playbook
     factory = ItemHandlerFactory()     
     factory.add_handler(AptHandler())
     for item in playbook:
