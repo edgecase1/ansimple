@@ -46,7 +46,7 @@ class TestFiles(unittest.TestCase):
         return
 
     def test_create_user(self):
-        content = [{ "user": { "name": "dogmax" }}]
+        content = [{ "user": { "name": "dogmax", "shell": "/bin/bash", "home": "/home/dogmax" }}]
         playbook = self.create_file(content)
         ansimple.main(playbook)
         return

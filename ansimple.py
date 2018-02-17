@@ -155,36 +155,56 @@ class UserHandler:
 
     def _create_user(self, data):
         if os.geteuid() != 0: raise Exception("not effective user ID 0! run with sudo")
+
+        cmd = [ "useradd" ]
+        if "shell" in data:
+            cmd += [ "-s", data["shell"] ]
+        if "home" in data:
+            cmd += [ "-m", "-d", data["home"] ]
+        cmd += [ data["name"]]
+
         self.logger.info("creating user {0}".format(data["name"]))
-        cmd = [ "useradd", data["name"] ]
+        self.logger.debug("cmd is {0}".format(cmd))
         process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, bufsize=1)
         process.communicate()
         if process.returncode != 0: raise Exception("error running process {0} - rc={1}".format(cmd[0], process.returncode))
         return
 
     def _change_user(self, data, os_user):
-        self.logger.info("changing user {0}".format(data["name"]))
-        print(os_user) # pw_dir pw_shell pw_uid
+        if os.geteuid() != 0: raise Exception("not effective user ID 0! run with sudo")
+
+        change_user = False
+        cmd = [ "usermod" ]
+        if "shell" in data and os_user.pw_shell != data["shell"]:
+            cmd += [ "-s", data["shell"] ]
+            change_user = True
+        if "home" in data and os_user.pw_dir != data["home"]:
+            cmd += [ "-d", data["home"] ]
+            change_user = True
+        cmd += [ data["name"] ]
+
+        if change_user:
+            self.logger.info("changing user {0}".format(data["name"]))
+            self.logger.debug("cmd is {0}".format(cmd))
+            process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, bufsize=1)
+            process.communicate()
+            if process.returncode != 0: raise Exception("error running process {0} - rc={1}".format(cmd[0], process.returncode))
+        else:
+            self.logger.info("no change of user '{0}'.".format(data["name"]))
         return
 
     def _delete_user(self, data):
-        print(os_user)
-        print(data)
         return
 
     def apply(self, item):
         data = item[self.provider]
-        print(data)
         try:
             os_user = getpwnam(data["name"])
-        except KeyError as e:
-            os_user = None
-        
-        if not os_user:
-            self._create_user(data)
-        else:
             self._change_user(data, os_user)
-       
+        except KeyError as e:
+            # user does not exist -> create it
+            self._create_user(data)
+        
         return
 
 
