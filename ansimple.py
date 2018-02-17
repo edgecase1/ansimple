@@ -9,7 +9,7 @@ import subprocess
 import os
 class AptHandler:
 
-    provider = "apt"
+    provider = "package"
 
     def __init__(self):
         self.logger = logging.getLogger("main")

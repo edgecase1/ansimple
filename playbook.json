@@ -1,0 +1,10 @@
+[
+        { "package": { "name": "git" } },
+        { "package": { "name": "vim" } },
+        { "package": { "name": "chromium-browser" } },
+        { "package": { "name": "build-essential" } },
+        { "package": { "name": "openjdk-9-jdk" } },
+        { "package": { "name": "openvpn" } },
+        { "package": { "name": "python3-pip" } },
+        { "file": { "path": "/tmp/xxx", "mode": 666, "vars": {} } }
+]

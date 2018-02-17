@@ -7,7 +7,7 @@ class TestFiles(unittest.TestCase):
 
     def create_file(self, content):
         content_json = json.dumps(content)
-        testfile_path = "testfile"
+        testfile_path = "testfile.json"
         with open(testfile_path, "w") as f:
             f.write(content_json)
         return testfile_path
