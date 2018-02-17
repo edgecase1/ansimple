@@ -50,3 +50,15 @@ class TestFiles(unittest.TestCase):
         playbook = self.create_file(content)
         ansimple.main(playbook)
         return
+
+    def test_change_user_password(self):
+        content = [{ "user": { "name": "dogmax", "password": "test" }}]
+        playbook = self.create_file(content)
+        ansimple.main(playbook)
+        return
+
+    def test_change_user_cryptpassword(self):
+        content = [{ "user": { "name": "dogmax", "crypt_password": "$6$bSuz5IsFenH31JEU$A7PjEuaqnT6MWvzJvNQhg/RdXzvFNiFpAK/MsxYdsoG7WVpZDGTAjEWtEAbrXHY3yGLiBm8TjFHGIHhY2aqFW." }}] # test
+        playbook = self.create_file(content)
+        ansimple.main(playbook)
+        return

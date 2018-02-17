@@ -145,6 +145,7 @@ class FileHandler():
 
 from pwd import getpwuid, getpwnam
 from grp import getgrgid, getgrnam
+import crypt
 class UserHandler:
 
     provider = "user"
@@ -152,6 +153,9 @@ class UserHandler:
     def __init__(self):
         self.logger = logging.getLogger("main")
         pass
+
+    def crypt_password(self, clear_password):
+        return crypt.crypt(clear_password, crypt.mksalt(crypt.METHOD_SHA512))
 
     def _create_user(self, data):
         if os.geteuid() != 0: raise Exception("not effective user ID 0! run with sudo")
@@ -161,6 +165,10 @@ class UserHandler:
             cmd += [ "-s", data["shell"] ]
         if "home" in data:
             cmd += [ "-m", "-d", data["home"] ]
+        if "crypt_password" in data:
+            cmd += [ "-p", data["crypt_password"] ]
+        elif "password" in data:
+            cmd += [ "-p", self.crypt_password(data["password"]) ]
         cmd += [ data["name"]]
 
         self.logger.info("creating user {0}".format(data["name"]))
@@ -180,6 +188,12 @@ class UserHandler:
             change_user = True
         if "home" in data and os_user.pw_dir != data["home"]:
             cmd += [ "-d", data["home"] ]
+            change_user = True
+        if "crypt_password" in data:
+            cmd += [ "-p", data["crypt_password"] ]
+            change_user = True
+        elif "password" in data:
+            cmd += [ "-p", self.crypt_password(data["password"]) ]
             change_user = True
         cmd += [ data["name"] ]
 
