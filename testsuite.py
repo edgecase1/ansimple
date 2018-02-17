@@ -12,6 +12,20 @@ class TestFiles(unittest.TestCase):
             f.write(content_json)
         return testfile_path
 
+    def test_empty_item(self):
+        content = [{}]
+        content_json = json.dumps(content)
+        playbook = self.create_file(content)
+        ansimple.main(playbook)
+        return
+
+    def test_invalid_item(self):
+        content = [{"file": {}, "test": {} }]
+        content_json = json.dumps(content)
+        playbook = self.create_file(content)
+        ansimple.main(playbook)
+        return
+
     def test_install_apt_package(self):
         content = [{ "apt": { "name": "vim" } }]
         content_json = json.dumps(content)

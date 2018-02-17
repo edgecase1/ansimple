@@ -155,6 +155,7 @@ class ItemHandlerFactory:
         self.handlers[handler.provider] = handler
 
     def create_by_type(self, item):
+        if len(item.keys()) != 1: raise Exception("malformed item {0}".format(item))
         requested_provider = list(item.keys())[0]
         if requested_provider in self.handlers.keys():
             return self.handlers[requested_provider]
@@ -177,7 +178,7 @@ def main(playbook_path):
     for item in playbook:
         handler = factory.create_by_type(item)
         if not handler:
-            logger.error("no handler defined for {0}".format(item))
+            raise Exception("no handler defined for '{0}'".format(list(item.keys())[0]))
             continue
         #try:
         handler.apply(item)
