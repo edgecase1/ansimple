@@ -27,7 +27,7 @@ class TestFiles(unittest.TestCase):
         return
 
     def test_install_apt_package(self):
-        content = [{ "apt": { "name": "vim" } }]
+        content = [{ "package": { "name": "vim" } }]
         content_json = json.dumps(content)
         playbook = self.create_file(content)
         ansimple.main(playbook)
@@ -45,3 +45,8 @@ class TestFiles(unittest.TestCase):
         ansimple.main(playbook)
         return
 
+    def test_create_user(self):
+        content = [{ "user": { "name": "dogmax" }}]
+        playbook = self.create_file(content)
+        ansimple.main(playbook)
+        return

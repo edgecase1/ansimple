@@ -143,12 +143,58 @@ class FileHandler():
     def __repr__(self):
         return self.provider
 
+from pwd import getpwuid, getpwnam
+from grp import getgrgid, getgrnam
+class UserHandler:
+
+    provider = "user"
+
+    def __init__(self):
+        self.logger = logging.getLogger("main")
+        pass
+
+    def _create_user(self, data):
+        if os.geteuid() != 0: raise Exception("not effective user ID 0! run with sudo")
+        self.logger.info("creating user {0}".format(data["name"]))
+        cmd = [ "useradd", data["name"] ]
+        process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, bufsize=1)
+        process.communicate()
+        if process.returncode != 0: raise Exception("error running process {0} - rc={1}".format(cmd[0], process.returncode))
+        return
+
+    def _change_user(self, data, os_user):
+        self.logger.info("changing user {0}".format(data["name"]))
+        print(os_user) # pw_dir pw_shell pw_uid
+        return
+
+    def _delete_user(self, data):
+        print(os_user)
+        print(data)
+        return
+
+    def apply(self, item):
+        data = item[self.provider]
+        print(data)
+        try:
+            os_user = getpwnam(data["name"])
+        except KeyError as e:
+            os_user = None
+        
+        if not os_user:
+            self._create_user(data)
+        else:
+            self._change_user(data, os_user)
+       
+        return
+
+
 class ItemHandlerFactory:
 
     def __init__(self):
         self.handlers = {}
         self.add_handler(AptHandler())
         self.add_handler(FileHandler())
+        self.add_handler(UserHandler())
         return
 
     def add_handler(self, handler):
