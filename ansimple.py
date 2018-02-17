@@ -161,10 +161,11 @@ class UserHandler:
         if os.geteuid() != 0: raise Exception("not effective user ID 0! run with sudo")
 
         cmd = [ "useradd" ]
+        cmd += [ "-m" ]
         if "shell" in data:
             cmd += [ "-s", data["shell"] ]
         if "home" in data:
-            cmd += [ "-m", "-d", data["home"] ]
+            cmd += [ "-d", data["home"] ]
         if "crypt_password" in data:
             cmd += [ "-p", data["crypt_password"] ]
         elif "password" in data:
@@ -176,6 +177,13 @@ class UserHandler:
         process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, bufsize=1)
         process.communicate()
         if process.returncode != 0: raise Exception("error running process {0} - rc={1}".format(cmd[0], process.returncode))
+
+        # query the created user
+        os_user = getpwnam(data["name"])
+
+        if "ssh_authorizedkey" in data:
+            self._add_sshauthorizedkey(data,  os_user.pw_dir)
+
         return
 
     def _change_user(self, data, os_user):
@@ -204,11 +212,51 @@ class UserHandler:
             process.communicate()
             if process.returncode != 0: raise Exception("error running process {0} - rc={1}".format(cmd[0], process.returncode))
         else:
-            self.logger.info("no change of user '{0}'.".format(data["name"]))
+            self.logger.debug("no change of user '{0}'.".format(data["name"]))
+
+        # create authorized key
+        if "ssh_authorizedkey" in data:
+            self._add_sshauthorizedkey(data,  os_user.pw_dir)
+
         return
 
     def _delete_user(self, data):
+        if os.geteuid() != 0: raise Exception("not effective user ID 0! run with sudo")
+
+        cmd = [ "userdel", data["name"] ]
+        process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, bufsize=1)
+        process.communicate()
+        if process.returncode != 0: raise Exception("error running process {0} - rc={1}".format(cmd[0], process.returncode))
+
         return
+
+    def _add_sshauthorizedkey(self, data,  home):
+        # creating .ssh directory
+        ssh_dir = os.path.join(home, ".ssh")
+        if not os.path.isdir(ssh_dir):
+            os.mkdir(ssh_dir)
+        
+        # read ssh keys
+        ssh_key_already_exists = False
+        ssh_authorizedkey_file = os.path.join(ssh_dir, "authorized_keys")
+        if os.path.isfile(ssh_authorizedkey_file):
+            with open(ssh_authorizedkey_file, "r") as f:
+                line = f.readline()
+                while line:
+                    ssh_line = line.split(" ", 3)
+                    if ssh_line[1] == data["ssh_authorizedkey"]:
+                        ssh_key_already_exists = True
+                        break
+        
+        if not ssh_key_already_exists:
+            # appending ssh key
+            self.logger.info("adding key to .ssh/authorized_keys of user {0}".format(data["name"]))
+            with open(ssh_authorizedkey_file, "a") as f:
+                key_type = "ssh-rsa"
+                comment = ""
+                f.write(key_type + " " + str(data["ssh_authorizedkey"]) + " " + comment + "\n")
+        return
+
 
     def apply(self, item):
         data = item[self.provider]
@@ -244,7 +292,7 @@ class ItemHandlerFactory:
 
 
 def main(playbook_path):
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger("main")
 
     # parse playbook file

@@ -62,3 +62,9 @@ class TestFiles(unittest.TestCase):
         playbook = self.create_file(content)
         ansimple.main(playbook)
         return
+
+    def test_add_sshkey(self):
+        content = [ { "user": { "name": "dogmax", "ssh_authorizedkey": "AAAAB3NzaC1yc2EAAAADAQABAAACAQC1oSy4WBYj7YAJV6CWUy8gYKM5yp2D9AZLxw7DNGJcYuoqm7kDG5+1n7JqtS0oHmQI3rIRfBjyabv5tBZRHzjReXL9URZ5mGqAqapSZtsDCLjP6WCM6RSfp2RKy00hvWBQ/NX4i9R1Pa3SM4nqoCYxNXQRVF4qL0lfeEznEL9QbLC5MYA0ywO7sZ5teezZG3PMCU5CO4hHtiEoZ2ydjRMMcygsxwxOOMWQAC6C5XHqJcmuMHrlUygb3SYcB+UYobLuq+KMAw6LE8X0ynMBw3ab2HulQYfAzmqzEj57BKybQrfJOVZd7x6X91wwFfdws0vaaxA5QDomQHJteZWm0X+RKEOchpH0/rmZ6LwntIWBDa9VVbzIS8JOVA+DL+06G4YCC4ImnDVQSMZmJoUYAwCjqi47hAfkgPb6sdRQ35NUa45w0MGyIrcYWKc1qjEwECQUf0tpz4CCG56TwP0mQVlzaiSYLtgg8Ky77AvcrCbquZNSav7xeuip0CwLbZBKbJe0c+RHcOZjImc3mlbWdw2mleM7hCUi6urB2++rVHt3PUbk51DyPMen4i6igjUiK/udKi76Ftu+8D6PVBfqbQRfeairSYMxqinggBJ1/bc+SNIyu8GwangV/UX46jqBvy2Hr/CVsa/elcFZBZtbcsQXKIGgY7s0D1xwTLPLBWFQPQ=="}} ]
+        playbook = self.create_file(content)
+        ansimple.main(playbook)
+        return
