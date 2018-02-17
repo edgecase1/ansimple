@@ -28,6 +28,13 @@ Install a package (e.g. with apt-get).
   { "file":{ "path": "/tmp/withtemplate", "vars": {"name": "Reinhard"} }}
 ]
 ```
+# User
+```
+[
+  { "user":{ "name": "avgowl", "home": "/home/avgowl", "shell": "/bin/bash"} }}
+]
+```
+
 
 # run tests
 A test suite tests all important functions to safely implement changes.
