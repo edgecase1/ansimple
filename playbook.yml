@@ -4,5 +4,7 @@
         { "apt": { "name": "chromium-browser" } },
         { "apt": { "name": "build-essential" } },
         { "apt": { "name": "openjdk-9-jdk" } },
-        { "apt": { "name": "openvpn" } }
+        { "apt": { "name": "openvpn" } },
+        { "apt": { "name": "python3-pip" } },
+        { "file": { "path": "/tmp/xxx", "mode": 666, "vars": {} } }
 ]
